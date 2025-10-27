@@ -85,14 +85,16 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Profile & Settings',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor, // ← ADD THIS
+        foregroundColor:
+            Theme.of(context).appBarTheme.foregroundColor, // ← ADD THIS
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -115,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -240,7 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

@@ -11,14 +11,14 @@ class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // FIXED
       appBar: AppBar(
         title: const Text(
           'About Developer',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor, // FIXED
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor, // FIXED
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -26,22 +26,22 @@ class _AboutPageState extends State<AboutPage> {
         child: Column(
           children: [
             // Developer Profile Card
-            _buildDeveloperCard(),
+            _buildDeveloperCard(context),
             const SizedBox(height: 24),
 
             // Contact Information
-            _buildContactSection(),
+            _buildContactSection(context),
             const SizedBox(height: 24),
 
             // App Information
-            _buildAppInfoSection(),
+            _buildAppInfoSection(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDeveloperCard() {
+  Widget _buildDeveloperCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -84,7 +84,7 @@ class _AboutPageState extends State<AboutPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Ghazanfar Ali', // Replace with your name
+                  'Ghazanfar Ali',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -126,11 +126,11 @@ class _AboutPageState extends State<AboutPage> {
     );
   }
 
-  Widget _buildContactSection() {
+  Widget _buildContactSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor, // FIXED
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -143,81 +143,107 @@ class _AboutPageState extends State<AboutPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Get In Touch',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onBackground, // FIXED
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             'Let\'s work together to bring your ideas to life! I specialize in creating beautiful, high-performance mobile applications.',
-            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+            style: TextStyle(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withOpacity(0.7), // FIXED
+                fontSize: 14),
           ),
           const SizedBox(height: 20),
-          Wrap(spacing: 12, runSpacing: 12, children: [
+          Wrap(spacing: 12, runSpacing: 12, children: []),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppInfoSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor, // FIXED
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'About Expense Tracker Pro',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onBackground, // FIXED
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Expense Tracker Pro is a modern, feature-rich financial management app designed to help users track their income and expenses effortlessly. Built with Flutter, it showcases clean architecture, responsive design, and excellent user experience.',
+            style: TextStyle(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withOpacity(0.7), // FIXED
+                fontSize: 14),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildInfoItem(context, 'Version', '1.0.0'),
+              const SizedBox(width: 20),
+              _buildInfoItem(context, 'Flutter', '3.19.0'),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _buildInfoItem(context, 'Last Update', 'March 2024'),
+              const SizedBox(width: 20),
+              _buildInfoItem(context, 'Platform', 'Android/iOS/Web'),
             ],
           ),
         ],
       ),
     );
   }
-}
 
-Widget _buildAppInfoSection() {
-  return Container(
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'About Expense Tracker Pro',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Expense Tracker Pro is a modern, feature-rich financial management app designed to help users track their income and expenses effortlessly. Built with Flutter, it showcases clean architecture, responsive design, and excellent user experience.',
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            _buildInfoItem('Version', '1.0.0'),
-            const SizedBox(width: 20),
-            _buildInfoItem('Flutter', '3.19.0'),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            _buildInfoItem('Last Update', 'March 2024'),
-            const SizedBox(width: 20),
-            _buildInfoItem('Platform', 'Android/iOS/Web'),
-          ],
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildInfoItem(String title, String value) {
-  return Expanded(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
-      ],
-    ),
-  );
+  Widget _buildInfoItem(BuildContext context, String title, String value) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withOpacity(0.6), // FIXED
+                  fontSize: 12)),
+          const SizedBox(height: 4),
+          Text(value,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onBackground, // FIXED
+              )),
+        ],
+      ),
+    );
+  }
 }

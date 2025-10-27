@@ -82,9 +82,8 @@ class _StatsPageState extends State<StatsPage> {
     final List<Map<String, dynamic>> result = [];
 
     categorySums.forEach((category, amount) {
-      final percentage = totalExpenses > 0
-          ? (amount / totalExpenses * 100).round()
-          : 0;
+      final percentage =
+          totalExpenses > 0 ? (amount / totalExpenses * 100).round() : 0;
       result.add({
         'name': category,
         'amount': amount,
@@ -115,14 +114,16 @@ class _StatsPageState extends State<StatsPage> {
     final totalExpenses = _totalExpenses.abs();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Statistics',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor, // ← ADD THIS
+        foregroundColor:
+            Theme.of(context).appBarTheme.foregroundColor, // ← ADD THIS
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -249,7 +250,7 @@ class _StatsPageState extends State<StatsPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor, // ← ADD THIS
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -293,7 +294,7 @@ class _StatsPageState extends State<StatsPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor, // ← ADD THIS
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -325,7 +326,6 @@ class _StatsPageState extends State<StatsPage> {
             ],
           ),
           const SizedBox(height: 16),
-
           if (!hasTransactions)
             _buildEmptyState(
               'No expense data yet.\nAdd some expenses to see category breakdown.',
@@ -425,7 +425,7 @@ class _StatsPageState extends State<StatsPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor, // ← ADD THIS
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -458,7 +458,6 @@ class _StatsPageState extends State<StatsPage> {
               'Top spending category: ${topCategories.first['name']}',
               Colors.blue,
             ),
-
             if (topCategories.length >= 2)
               _buildInsightItem(
                 Icons.analytics,

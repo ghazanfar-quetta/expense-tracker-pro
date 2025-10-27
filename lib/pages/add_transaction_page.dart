@@ -190,14 +190,16 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Add Transaction',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor, // ← ADD THIS
+        foregroundColor:
+            Theme.of(context).appBarTheme.foregroundColor, // ← ADD THIS
         elevation: 0,
         actions: [
           IconButton(
@@ -324,7 +326,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         prefixText: '${widget.appSettings.currencySymbol} ',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).cardColor, // ← ADD THIS
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -349,7 +351,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         hintText: 'Enter transaction title',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).cardColor, // ← ADD THIS
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -442,7 +444,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor, // ← ADD THIS
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey[300]!),
             ),

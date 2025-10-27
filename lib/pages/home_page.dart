@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'pages/stats_page.dart';
-import 'pages/about_page.dart';
-import 'pages/profile_page.dart';
-import 'pages/add_transaction_page.dart';
-import 'pages/notifications_page.dart';
-import 'pages/all_transactions_page.dart';
-import 'utils/app_settings.dart';
-import 'utils/backup_service.dart';
+import 'stats_page.dart';
+import 'about_page.dart';
+import 'profile_page.dart';
+import 'add_transaction_page.dart';
+import 'notifications_page.dart';
+import 'all_transactions_page.dart';
+import '../utils/app_settings.dart';
+import '../utils/backup_service.dart';
 
 class HomePage extends StatefulWidget {
   final AppSettings appSettings;
