@@ -1,4 +1,4 @@
-# my_first_project
+# expense-tracker-pro
 
 A new Flutter project.
 
