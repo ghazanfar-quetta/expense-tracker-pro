@@ -94,12 +94,53 @@ class BackupService {
   }
 
   // FIXED: Create IconData using constant constructor
+  // Alternative: Use predefined Material Icons
   static IconData _getIconData(int codePoint) {
-    return IconData(
-      codePoint,
-      fontFamily: 'MaterialIcons',
-      matchTextDirection: false,
-    );
+    // Map common code points to actual Material Icons
+    switch (codePoint) {
+      case 0xe190: // calendar_today
+        return Icons.calendar_today;
+      case 0xe5c3: // receipt
+        return Icons.receipt;
+      case 0xe8cc: // attach_money
+        return Icons.attach_money;
+      case 0xe1bd: // shopping_cart
+        return Icons.shopping_cart;
+      case 0xe8f8: // restaurant
+        return Icons.restaurant;
+      case 0xe531: // directions_car
+        return Icons.directions_car;
+      case 0xe53f: // local_hospital
+        return Icons.local_hospital;
+      case 0xe80c: // school
+        return Icons.school;
+      case 0xe88a: // home
+        return Icons.home;
+      case 0xe539: // flight
+        return Icons.flight;
+      case 0xe8b8: // work
+        return Icons.work;
+      case 0xea3e: // celebration
+        return Icons.celebration;
+      case 0xe30a: // computer
+        return Icons.computer;
+      case 0xe556: // trending_up
+        return Icons.trending_up;
+      case 0xe8f4: // card_giftcard
+        return Icons.card_giftcard;
+      case 0xeb3f: // business_center
+        return Icons.business_center;
+      case 0xe04b: // movie
+        return Icons.movie;
+      case 0xe8b4: // warning
+        return Icons.warning;
+      case 0xe922: // analytics
+        return Icons.analytics;
+      case 0xe88e: // backup
+        return Icons.backup;
+      default:
+        return Icons.category; // fallback icon
+    }
   }
 
   // Create backup file - UPDATED with web check
