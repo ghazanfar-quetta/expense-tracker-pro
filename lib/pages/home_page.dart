@@ -173,10 +173,19 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
+          _buildNavItem(Icons.info_outline, 'About', false, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    AboutPage(appSettings: widget.appSettings),
+              ),
+            );
+          }),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -230,7 +239,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildBalanceCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -377,7 +386,7 @@ class _HomePageState extends State<HomePage> {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -421,26 +430,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSectionHeader(String title, String actionText) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        GestureDetector(
-          onTap: _recentTransactions.isEmpty ? null : _viewAllTransactions,
-          child: Text(
-            actionText,
-            style: TextStyle(
-              color: _recentTransactions.isEmpty
-                  ? Colors.grey
-                  : Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w500,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: 16.0, vertical: 8.0), // ← ADD THIS
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          GestureDetector(
+            onTap: _recentTransactions.isEmpty ? null : _viewAllTransactions,
+            child: Text(
+              actionText,
+              style: TextStyle(
+                color: _recentTransactions.isEmpty
+                    ? Colors.grey
+                    : Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -621,7 +634,9 @@ class _HomePageState extends State<HomePage> {
               _buildNavItem(Icons.info_outline, 'About', false, () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AboutPage()),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          AboutPage(appSettings: widget.appSettings)),
                 );
               }),
             ],

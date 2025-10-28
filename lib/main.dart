@@ -39,9 +39,10 @@ class _MyAppState extends State<MyApp> {
       title: 'Expense Tracker Pro',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7C3AED),
+          seedColor:
+              const Color.fromARGB(255, 249, 145, 110), // Orange for light mode
           brightness: Brightness.light,
-          primary: const Color.fromARGB(255, 179, 142, 244),
+          primary: const Color.fromARGB(255, 249, 145, 110),
           secondary: const Color(0xFF10B981),
           error: const Color(0xFFEF4444),
         ),
@@ -55,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7C3AED),
+            backgroundColor: const Color.fromARGB(255, 249, 145, 110), // Orange
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
@@ -66,9 +67,10 @@ class _MyAppState extends State<MyApp> {
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7C3AED),
+          seedColor: const Color.fromARGB(
+              255, 249, 145, 110), // Orange for dark mode too
           brightness: Brightness.dark,
-          primary: const Color(0xFF7C3AED),
+          primary: const Color.fromARGB(255, 249, 145, 110), // Orange
           secondary: const Color(0xFF10B981),
           error: const Color(0xFFEF4444),
         ),
@@ -83,7 +85,7 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: Colors.grey[900],
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7C3AED),
+            backgroundColor: const Color.fromARGB(255, 249, 145, 110), // Orange
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(

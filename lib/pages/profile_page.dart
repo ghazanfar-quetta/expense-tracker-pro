@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_settings.dart';
 import '../utils/backup_service.dart';
+import '../widgets/custom_bottom_nav_bar.dart'; // ← ADD THIS IMPORT
 
 class ProfilePage extends StatefulWidget {
   final AppSettings appSettings;
@@ -125,6 +126,12 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildSettings(),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        // ← ADD THIS
+        appSettings: widget.appSettings,
+        transactions: [], // Profile page doesn't need transactions, so pass empty list
+        currentPage: 'profile', // This will highlight the Profile icon
       ),
     );
   }
@@ -326,7 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Dark Mode ${value ? 'enabled' : 'disabled'}'),
-                  backgroundColor: value ? Colors.deepPurple : Colors.grey,
+                  backgroundColor: value ? Colors.orangeAccent : Colors.grey,
                 ),
               );
             },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/app_settings.dart';
+import '../widgets/custom_bottom_nav_bar.dart'; // ← ADD THIS IMPORT
 
 class StatsPage extends StatefulWidget {
   final AppSettings appSettings;
@@ -151,6 +152,12 @@ class _StatsPageState extends State<StatsPage> {
             if (hasTransactions) _buildSpendingInsights(),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        // ← ADD THIS
+        appSettings: widget.appSettings,
+        transactions: widget.transactions,
+        currentPage: 'stats',
       ),
     );
   }

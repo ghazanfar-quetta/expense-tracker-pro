@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_bottom_nav_bar.dart'; // ← ADD THIS IMPORT
+import '../utils/app_settings.dart'; // ← ADD THIS IMPORT
 
 class AboutPage extends StatefulWidget {
-  const AboutPage({super.key});
+  final AppSettings appSettings; // ← ADD THIS
+
+  const AboutPage(
+      {super.key, required this.appSettings}); // ← ADD required appSettings
 
   @override
   State<AboutPage> createState() => _AboutPageState();
@@ -11,14 +16,14 @@ class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // FIXED
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'About Developer',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor, // FIXED
-        foregroundColor: Theme.of(context).appBarTheme.foregroundColor, // FIXED
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -38,10 +43,18 @@ class _AboutPageState extends State<AboutPage> {
           ],
         ),
       ),
+      bottomNavigationBar: CustomBottomNavBar(
+        // ← ADD THIS
+        appSettings: widget.appSettings, // ← Now this will work
+        transactions: [], // About page doesn't need transactions
+        currentPage: 'about', // This will highlight the About icon
+      ),
     );
   }
 
   Widget _buildDeveloperCard(BuildContext context) {
+    final orangeColor = const Color.fromARGB(255, 249, 145, 110);
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -49,14 +62,14 @@ class _AboutPageState extends State<AboutPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF7C3AED),
-            const Color(0xFF7C3AED).withOpacity(0.8),
+            orangeColor,
+            orangeColor.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF7C3AED).withOpacity(0.3),
+            color: orangeColor.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -75,7 +88,7 @@ class _AboutPageState extends State<AboutPage> {
             child: Icon(
               Icons.code,
               size: 40,
-              color: Theme.of(context).colorScheme.primary,
+              color: orangeColor,
             ),
           ),
           const SizedBox(width: 20),
@@ -130,7 +143,7 @@ class _AboutPageState extends State<AboutPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor, // FIXED
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -148,17 +161,14 @@ class _AboutPageState extends State<AboutPage> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onBackground, // FIXED
+              color: Theme.of(context).colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 16),
           Text(
             'Let\'s work together to bring your ideas to life! I specialize in creating beautiful, high-performance mobile applications.',
             style: TextStyle(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withOpacity(0.7), // FIXED
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 fontSize: 14),
           ),
           const SizedBox(height: 20),
@@ -172,7 +182,7 @@ class _AboutPageState extends State<AboutPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor, // FIXED
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -190,17 +200,14 @@ class _AboutPageState extends State<AboutPage> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onBackground, // FIXED
+              color: Theme.of(context).colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 16),
           Text(
             'Expense Tracker Pro is a modern, feature-rich financial management app designed to help users track their income and expenses effortlessly. Built with Flutter, it showcases clean architecture, responsive design, and excellent user experience.',
             style: TextStyle(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withOpacity(0.7), // FIXED
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                 fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -231,16 +238,14 @@ class _AboutPageState extends State<AboutPage> {
         children: [
           Text(title,
               style: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withOpacity(0.6), // FIXED
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                   fontSize: 12)),
           const SizedBox(height: 4),
           Text(value,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onBackground, // FIXED
+                color: Theme.of(context).colorScheme.onBackground,
               )),
         ],
       ),
