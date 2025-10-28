@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         title: const Text(
-          'Expense Tracker',
+          'Expense Tracker Pro',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
@@ -407,7 +407,7 @@ class _HomePageState extends State<HomePage> {
               child: Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -536,13 +536,13 @@ class _HomePageState extends State<HomePage> {
                   transaction['title'] as String,
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   transaction['category'] as String,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
@@ -560,7 +560,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       color: isIncome ? Colors.green : Colors.red,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                   ),
                 ),

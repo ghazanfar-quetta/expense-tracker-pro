@@ -161,7 +161,7 @@ class _StatsPageState extends State<StatsPage> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -250,11 +250,13 @@ class _StatsPageState extends State<StatsPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor, // ← ADD THIS
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black.withOpacity(0.3)
+                : Colors.grey.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -274,13 +276,21 @@ class _StatsPageState extends State<StatsPage> {
           Text(
             hasData ? value : '-',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: hasData ? Colors.black : Colors.grey[400],
+              color: hasData
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Colors.grey[400],
             ),
           ),
           const SizedBox(height: 4),
-          Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+          Text(title,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withOpacity(0.7))),
         ],
       ),
     );
@@ -311,14 +321,14 @@ class _StatsPageState extends State<StatsPage> {
             children: [
               const Text(
                 'Category Breakdown',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               if (hasTransactions)
                 Text(
                   'Total: ${_formatCurrency(totalExpenses)}',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
                   ),
@@ -374,7 +384,9 @@ class _StatsPageState extends State<StatsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
+                Text(name,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500, fontSize: 12)),
                 const SizedBox(height: 4),
                 Container(
                   height: 6,
@@ -402,7 +414,8 @@ class _StatsPageState extends State<StatsPage> {
             children: [
               Text(
                 _formatCurrency(amount),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
               Text(
                 '$percentage%',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_settings.dart';
 import '../utils/backup_service.dart';
 
@@ -50,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     widget.appSettings.addListener(_onSettingsChanged);
     _loadBackupStatus();
+    _loadProfileData(); // Load saved profile data
   }
 
   @override
@@ -60,6 +62,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _onSettingsChanged() {
     setState(() {});
+  }
+
+  // Load saved profile data from SharedPreferences
+  void _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userName = prefs.getString('userName') ?? 'Your Name';
+      _userEmail = prefs.getString('userEmail') ?? 'Your Email Address';
+    });
+  }
+
+  // Save profile data to SharedPreferences
+  void _saveProfileData(String name, String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userName', name);
+    await prefs.setString('userEmail', email);
   }
 
   void _loadBackupStatus() async {
@@ -91,10 +109,8 @@ class _ProfilePageState extends State<ProfilePage> {
           'Profile & Settings',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor:
-            Theme.of(context).appBarTheme.backgroundColor, // ← ADD THIS
-        foregroundColor:
-            Theme.of(context).appBarTheme.foregroundColor, // ← ADD THIS
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -219,10 +235,27 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ElevatedButton(
             onPressed: () {
+              final newName = nameController.text.trim();
+              final newEmail = emailController.text.trim();
+
+              if (newName.isEmpty || newEmail.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter both name and email'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
               setState(() {
-                _userName = nameController.text.trim();
-                _userEmail = emailController.text.trim();
+                _userName = newName;
+                _userEmail = newEmail;
               });
+
+              // Save to persistent storage
+              _saveProfileData(newName, newEmail);
+
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
