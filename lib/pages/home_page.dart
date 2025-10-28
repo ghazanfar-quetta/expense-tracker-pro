@@ -173,15 +173,6 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
-          _buildNavItem(Icons.info_outline, 'About', false, () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    AboutPage(appSettings: widget.appSettings),
-              ),
-            );
-          }),
         ],
       ),
       body: SingleChildScrollView(
