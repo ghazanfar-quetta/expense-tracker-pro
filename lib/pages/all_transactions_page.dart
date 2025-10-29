@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/app_settings.dart';
+import 'add_transaction_page.dart';
 
 class AllTransactionsPage extends StatefulWidget {
   final AppSettings appSettings;
@@ -54,7 +55,8 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
     final deletedIndex = widget.transactions.indexOf(transaction);
 
     // Remove from the main transactions list
-    widget.transactions.remove(transaction);
+    widget.transactions
+        .removeAt(deletedIndex); // Use removeAt instead of remove
 
     // Notify parent (home page) about the deletion
     if (widget.onTransactionDeleted != null) {
@@ -73,11 +75,10 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
           label: 'UNDO',
           textColor: Colors.white,
           onPressed: () {
-            // Restore the transaction
+            // Restore the transaction at the original index
             widget.transactions.insert(deletedIndex, deletedTransaction);
             if (widget.onTransactionDeleted != null) {
-              widget.onTransactionDeleted!(
-                  deletedTransaction); // Notify about undo
+              widget.onTransactionDeleted!(deletedTransaction);
             }
             setState(() {});
           },
@@ -251,6 +252,35 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 4),
+                // EDIT BUTTON
+                GestureDetector(
+                  onTap: () {
+                    _editTransaction(transaction);
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, color: Colors.blue, size: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Edit',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -286,6 +316,42 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
         ],
       ),
     );
+  }
+
+  void _editTransaction(Map<String, dynamic> transaction) async {
+    // Store the original index before navigation
+    final originalIndex = widget.transactions.indexOf(transaction);
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTransactionPage(
+          appSettings: widget.appSettings,
+          transactionToEdit: transaction,
+        ),
+      ),
+    );
+
+    if (result != null && originalIndex != -1) {
+      // Replace the transaction at the original index
+      widget.transactions[originalIndex] = result;
+
+      // Notify parent to save changes
+      if (widget.onTransactionDeleted != null) {
+        widget.onTransactionDeleted!(result);
+      }
+
+      // Force UI refresh
+      setState(() {});
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Transaction updated successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
 
   void _showFilterDialog() {

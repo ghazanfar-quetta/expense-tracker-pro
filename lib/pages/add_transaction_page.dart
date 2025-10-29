@@ -3,8 +3,13 @@ import '../utils/app_settings.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final AppSettings appSettings;
+  final Map<String, dynamic>? transactionToEdit;
 
-  const AddTransactionPage({super.key, required this.appSettings});
+  const AddTransactionPage({
+    super.key,
+    required this.appSettings,
+    this.transactionToEdit,
+  });
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -47,9 +52,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   void initState() {
     super.initState();
-    // Set initial category based on transaction type
-    _selectedCategory = _currentCategories.first;
-    // Add listener for settings changes
+
+    // CHECK IF EDITING EXISTING TRANSACTION
+    if (widget.transactionToEdit != null) {
+      _loadTransactionData();
+    } else {
+      // Set initial category based on transaction type
+      _selectedCategory = _currentCategories.first;
+    }
+
     widget.appSettings.addListener(_onSettingsChanged);
   }
 
@@ -63,6 +74,24 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   void _onSettingsChanged() {
     setState(() {}); // Rebuild when currency changes
+  }
+
+  // Load existing transaction data for editing
+  void _loadTransactionData() {
+    final transaction = widget.transactionToEdit!;
+
+    _titleController.text = transaction['title'] as String;
+
+    final amount = transaction['amount'] as double;
+    if (amount > 0) {
+      _transactionType = 'Income';
+      _amountController.text = amount.toStringAsFixed(2);
+    } else {
+      _transactionType = 'Expense';
+      _amountController.text = amount.abs().toStringAsFixed(2);
+    }
+
+    _selectedCategory = transaction['category'] as String;
   }
 
   // Get current categories based on transaction type
@@ -192,14 +221,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Add Transaction',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        title: Text(
+          widget.transactionToEdit != null
+              ? 'Edit Transaction'
+              : 'Add Transaction',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
-        backgroundColor:
-            Theme.of(context).appBarTheme.backgroundColor, // ← ADD THIS
-        foregroundColor:
-            Theme.of(context).appBarTheme.foregroundColor, // ← ADD THIS
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
         actions: [
           IconButton(
@@ -326,7 +355,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         prefixText: '${widget.appSettings.currencySymbol} ',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Theme.of(context).cardColor, // ← ADD THIS
+        fillColor: Theme.of(context).cardColor,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -351,7 +380,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         hintText: 'Enter transaction title',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Theme.of(context).cardColor, // ← ADD THIS
+        fillColor: Theme.of(context).cardColor,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -444,7 +473,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor, // ← ADD THIS
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey[300]!),
             ),
@@ -480,7 +509,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               _transactionType == 'Income' ? Colors.green : Colors.red,
         ),
         child: Text(
-          'Save $_transactionType',
+          widget.transactionToEdit != null
+              ? 'Update $_transactionType'
+              : 'Save $_transactionType',
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -508,7 +539,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   void _saveTransaction() {
     if (_formKey.currentState!.validate()) {
       // Create the transaction with proper data structure
-      final Map<String, dynamic> newTransaction = {
+      final Map<String, dynamic> transaction = {
         'title': _titleController.text,
         'amount': _transactionType == 'Expense'
             ? -double.parse(_amountController.text)
@@ -519,13 +550,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         'color': _getCategoryColor(_selectedCategory),
       };
 
-      // Return the new transaction to the previous page
-      Navigator.of(context).pop(newTransaction);
+      // Return the transaction to the previous page
+      Navigator.of(context).pop(transaction);
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$_transactionType added successfully!'),
+          content: Text(widget.transactionToEdit != null
+              ? '$_transactionType updated successfully!'
+              : '$_transactionType added successfully!'),
           backgroundColor:
               _transactionType == 'Income' ? Colors.green : Colors.red,
           behavior: SnackBarBehavior.floating,

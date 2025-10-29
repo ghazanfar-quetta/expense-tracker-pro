@@ -151,6 +151,38 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _editTransaction(Map<String, dynamic> transaction) async {
+    // Navigate to AddTransactionPage with the existing transaction data
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTransactionPage(
+          appSettings: widget.appSettings,
+          transactionToEdit: transaction, // Pass the transaction to edit
+        ),
+      ),
+    );
+
+    if (result != null) {
+      // Find and update the existing transaction
+      final index = _recentTransactions.indexOf(transaction);
+      if (index != -1) {
+        setState(() {
+          _recentTransactions[index] =
+              result; // Replace with edited transaction
+        });
+        _saveTransactions();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Transaction updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
+  }
+
   void _viewAllTransactions() {
     if (_recentTransactions.isEmpty) return;
 
@@ -170,7 +202,11 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-    );
+    ).then((_) {
+      // This runs when returning from AllTransactionsPage
+      // Force a refresh to ensure UI is updated
+      setState(() {});
+    });
   }
 
   @override
@@ -530,7 +566,8 @@ class _HomePageState extends State<HomePage> {
 
     return Dismissible(
       key: Key(transaction['title'] +
-          transaction['amount'].toString()), // Unique key
+          transaction['amount'].toString() +
+          transaction['date']),
       direction: DismissDirection.endToStart,
       background: Container(
         color: Colors.red,
@@ -611,6 +648,35 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   transaction['date'] as String,
                   style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+                const SizedBox(height: 4),
+                // ADD EDIT BUTTON
+                GestureDetector(
+                  onTap: () {
+                    _editTransaction(transaction);
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, color: Colors.blue, size: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Edit',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
