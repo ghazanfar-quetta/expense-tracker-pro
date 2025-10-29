@@ -4,11 +4,13 @@ import '../utils/app_settings.dart';
 class AllTransactionsPage extends StatefulWidget {
   final AppSettings appSettings;
   final List<Map<String, dynamic>> transactions;
+  final Function(Map<String, dynamic>)? onTransactionDeleted;
 
   const AllTransactionsPage({
     super.key,
     required this.appSettings,
     required this.transactions,
+    this.onTransactionDeleted,
   });
 
   @override
@@ -16,30 +18,25 @@ class AllTransactionsPage extends StatefulWidget {
 }
 
 class _AllTransactionsPageState extends State<AllTransactionsPage> {
-  String _filterType = 'All'; // All, Income, Expense
-  String _sortBy = 'Date'; // Date, Amount, Category
-
   List<Map<String, dynamic>> get _filteredTransactions {
     List<Map<String, dynamic>> filtered = List.from(widget.transactions);
 
     // Apply filter
-    if (_filterType == 'Income') {
+    if (widget.appSettings.transactionFilterType == 'Income') {
       filtered = filtered.where((t) => t['amount'] > 0).toList();
-    } else if (_filterType == 'Expense') {
+    } else if (widget.appSettings.transactionFilterType == 'Expense') {
       filtered = filtered.where((t) => t['amount'] < 0).toList();
     }
 
     // Apply sorting
     filtered.sort((a, b) {
-      switch (_sortBy) {
+      switch (widget.appSettings.transactionSortBy) {
         case 'Amount':
           return (b['amount'] as double).compareTo(a['amount'] as double);
         case 'Category':
           return (a['category'] as String).compareTo(b['category'] as String);
         case 'Date':
         default:
-          // Assuming dates are in format that can be compared as strings
-          // For proper date sorting, you'd want to store DateTime objects
           return (b['date'] as String).compareTo(a['date'] as String);
       }
     });
@@ -49,6 +46,44 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
 
   String _formatCurrency(double amount) {
     return '${widget.appSettings.currencySymbol} ${amount.abs().toStringAsFixed(2)}';
+  }
+
+  // DELETE METHOD
+  void _deleteTransaction(Map<String, dynamic> transaction) {
+    final deletedTransaction = Map<String, dynamic>.from(transaction);
+    final deletedIndex = widget.transactions.indexOf(transaction);
+
+    // Remove from the main transactions list
+    widget.transactions.remove(transaction);
+
+    // Notify parent (home page) about the deletion
+    if (widget.onTransactionDeleted != null) {
+      widget.onTransactionDeleted!(deletedTransaction);
+    }
+
+    // Update UI
+    setState(() {});
+
+    // Show undo snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Transaction deleted'),
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'UNDO',
+          textColor: Colors.white,
+          onPressed: () {
+            // Restore the transaction
+            widget.transactions.insert(deletedIndex, deletedTransaction);
+            if (widget.onTransactionDeleted != null) {
+              widget.onTransactionDeleted!(
+                  deletedTransaction); // Notify about undo
+            }
+            setState(() {});
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -89,7 +124,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  '${_filterType} • Sorted by $_sortBy',
+                  '${widget.appSettings.transactionFilterType} • Sorted by ${widget.appSettings.transactionSortBy}',
                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
@@ -113,96 +148,113 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
     );
   }
 
+  // TRANSACTION ITEM METHOD WITH DELETE
   Widget _buildTransactionItem(Map<String, dynamic> transaction) {
     final bool isIncome = transaction['amount'] > 0;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return Dismissible(
+      key: Key(transaction['title'] +
+          transaction['amount'].toString() +
+          transaction['date']),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete, color: Colors.white, size: 24),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: (transaction['color'] as Color).withOpacity(0.1),
-              shape: BoxShape.circle,
+      onDismissed: (direction) {
+        _deleteTransaction(transaction);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(
-              transaction['icon'] as IconData,
-              color: transaction['color'] as Color,
-              size: 20,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: (transaction['color'] as Color).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                transaction['icon'] as IconData,
+                color: transaction['color'] as Color,
+                size: 20,
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction['title'] as String,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    transaction['category'] as String,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    transaction['date'] as String,
+                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  transaction['title'] as String,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
+                  isIncome
+                      ? '+ ${_formatCurrency(transaction['amount'] as double)}'
+                      : '- ${_formatCurrency((transaction['amount'] as double).abs())}',
+                  style: TextStyle(
+                    color: isIncome ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  transaction['category'] as String,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  transaction['date'] as String,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isIncome
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    isIncome ? 'INCOME' : 'EXPENSE',
+                    style: TextStyle(
+                      color: isIncome ? Colors.green : Colors.red,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                isIncome
-                    ? '+ ${_formatCurrency(transaction['amount'] as double)}'
-                    : '- ${_formatCurrency((transaction['amount'] as double).abs())}',
-                style: TextStyle(
-                  color: isIncome ? Colors.green : Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isIncome
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  isIncome ? 'INCOME' : 'EXPENSE',
-                  style: TextStyle(
-                    color: isIncome ? Colors.green : Colors.red,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -253,11 +305,10 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
               children: ['All', 'Income', 'Expense'].map((type) {
                 return ChoiceChip(
                   label: Text(type),
-                  selected: _filterType == type,
+                  selected: widget.appSettings.transactionFilterType == type,
                   onSelected: (selected) {
-                    setState(() {
-                      _filterType = type;
-                    });
+                    widget.appSettings.setTransactionFilterType(type);
+                    setState(() {});
                     Navigator.pop(context);
                   },
                 );
@@ -273,11 +324,10 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
               children: ['Date', 'Amount', 'Category'].map((sort) {
                 return ChoiceChip(
                   label: Text(sort),
-                  selected: _sortBy == sort,
+                  selected: widget.appSettings.transactionSortBy == sort,
                   onSelected: (selected) {
-                    setState(() {
-                      _sortBy = sort;
-                    });
+                    widget.appSettings.setTransactionSortBy(sort);
+                    setState(() {});
                     Navigator.pop(context);
                   },
                 );

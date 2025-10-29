@@ -50,6 +50,36 @@ class _HomePageState extends State<HomePage> {
     await BackupService.saveTransactions(_recentTransactions);
   }
 
+  void _deleteTransaction(Map<String, dynamic> transaction) {
+    // Store the deleted transaction for undo
+    final deletedTransaction = transaction;
+    final deletedIndex = _recentTransactions.indexOf(transaction);
+
+    setState(() {
+      _recentTransactions.remove(transaction);
+    });
+
+    _saveTransactions(); // Save to storage
+
+    // Show undo snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Transaction deleted'),
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'UNDO',
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              _recentTransactions.insert(deletedIndex, deletedTransaction);
+            });
+            _saveTransactions(); // Save the undo
+          },
+        ),
+      ),
+    );
+  }
+
   // Calculate totals from actual transactions
   double get _totalBalance {
     return _recentTransactions.fold(
@@ -121,7 +151,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Navigate to all transactions page
   void _viewAllTransactions() {
     if (_recentTransactions.isEmpty) return;
 
@@ -131,6 +160,14 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => AllTransactionsPage(
           appSettings: widget.appSettings,
           transactions: _recentTransactions,
+          onTransactionDeleted: (deletedTransaction) {
+            // This will be called when a transaction is deleted from AllTransactionsPage
+            setState(() {
+              // The transaction is already removed from the list
+              // We just need to save the changes
+              _saveTransactions();
+            });
+          },
         ),
       ),
     );
@@ -157,18 +194,6 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(
                   builder: (context) =>
                       NotificationsPage(appSettings: widget.appSettings),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ProfilePage(appSettings: widget.appSettings),
                 ),
               );
             },
@@ -503,80 +528,94 @@ class _HomePageState extends State<HomePage> {
   Widget _buildTransactionItem(Map<String, dynamic> transaction) {
     final bool isIncome = transaction['amount'] > 0;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return Dismissible(
+      key: Key(transaction['title'] +
+          transaction['amount'].toString()), // Unique key
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete, color: Colors.white, size: 24),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: (transaction['color'] as Color).withOpacity(0.1),
-              shape: BoxShape.circle,
+      onDismissed: (direction) {
+        _deleteTransaction(transaction);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(
-              transaction['icon'] as IconData,
-              color: transaction['color'] as Color,
-              size: 20,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: (transaction['color'] as Color).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                transaction['icon'] as IconData,
+                color: transaction['color'] as Color,
+                size: 20,
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction['title'] as String,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    transaction['category'] as String,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  transaction['title'] as String,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                SizedBox(
+                  width: 120,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      _formatTransactionAmount(transaction['amount'] as double),
+                      style: TextStyle(
+                        color: isIncome ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  transaction['category'] as String,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  transaction['date'] as String,
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 120,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    _formatTransactionAmount(transaction['amount'] as double),
-                    style: TextStyle(
-                      color: isIncome ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                transaction['date'] as String,
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

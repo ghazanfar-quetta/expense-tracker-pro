@@ -8,6 +8,9 @@ class AppSettings extends ChangeNotifier {
   bool _notificationsEnabled = true;
   bool _backupEnabled = true;
 
+  String _transactionFilterType = 'All'; // All, Income, Expense
+  String _transactionSortBy = 'Date'; // Date, Amount, Category
+
   AppSettings() {
     _loadBackupSetting();
   }
@@ -21,6 +24,10 @@ class AppSettings extends ChangeNotifier {
 
   // Get currency symbol only
   String get currencySymbol => _currency.split(' - ')[0];
+
+  // ADD GETTERS FOR FILTERS
+  String get transactionFilterType => _transactionFilterType;
+  String get transactionSortBy => _transactionSortBy;
 
   // Setters
   void setCurrency(String newCurrency) {
@@ -53,6 +60,17 @@ class AppSettings extends ChangeNotifier {
   void setBackupEnabled(bool enabled) async {
     _backupEnabled = enabled;
     await BackupService.setBackupEnabled(enabled);
+    notifyListeners();
+  }
+
+  // ADD SETTERS FOR FILTERS
+  void setTransactionFilterType(String filterType) {
+    _transactionFilterType = filterType;
+    notifyListeners();
+  }
+
+  void setTransactionSortBy(String sortBy) {
+    _transactionSortBy = sortBy;
     notifyListeners();
   }
 
