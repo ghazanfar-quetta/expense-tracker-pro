@@ -19,6 +19,28 @@ class AllTransactionsPage extends StatefulWidget {
 }
 
 class _AllTransactionsPageState extends State<AllTransactionsPage> {
+  // Helper method to parse dates in DD/MM/YYYY format
+  DateTime _parseDate(String dateString) {
+    if (dateString.toLowerCase() == 'today') {
+      return DateTime.now();
+    }
+
+    try {
+      final parts = dateString.split('/');
+      if (parts.length == 3) {
+        final day = int.parse(parts[0]);
+        final month = int.parse(parts[1]);
+        final year = int.parse(parts[2]);
+        return DateTime(year, month, day);
+      }
+    } catch (e) {
+      print('Error parsing date: $dateString');
+    }
+
+    // Return a very old date if parsing fails
+    return DateTime(1900);
+  }
+
   List<Map<String, dynamic>> get _filteredTransactions {
     List<Map<String, dynamic>> filtered = List.from(widget.transactions);
 
@@ -38,7 +60,8 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
           return (a['category'] as String).compareTo(b['category'] as String);
         case 'Date':
         default:
-          return (b['date'] as String).compareTo(a['date'] as String);
+          return _parseDate(b['date'] as String)
+              .compareTo(_parseDate(a['date'] as String));
       }
     });
 

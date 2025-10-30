@@ -283,7 +283,7 @@ class _StatsPageState extends State<StatsPage> {
           Text(
             hasData ? value : '-',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: hasData
                   ? Theme.of(context).colorScheme.onSurface
