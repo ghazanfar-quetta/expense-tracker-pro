@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../pages/home_page.dart';
 import '../pages/stats_page.dart';
 import '../pages/profile_page.dart';
-import '../pages/about_page.dart';
+import '../pages/reports_page.dart';
 import '../utils/app_settings.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final AppSettings appSettings;
   final List<Map<String, dynamic>> transactions;
-  final String currentPage; // 'home', 'stats', 'profile', 'about'
+  final String currentPage; // 'home', 'stats', 'profile', 'Reports'
 
   const CustomBottomNavBar({
     super.key,
@@ -43,7 +43,10 @@ class CustomBottomNavBar extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HomePage(appSettings: appSettings),
+                      builder: (context) => HomePage(
+                        appSettings: appSettings,
+                        transactions: [],
+                      ),
                     ),
                     (route) => false,
                   );
@@ -75,15 +78,16 @@ class CustomBottomNavBar extends StatelessWidget {
                   );
                 }
               }),
-              _buildNavItem(
-                  context, Icons.info_outline, 'About', currentPage == 'about',
-                  () {
-                if (currentPage != 'about') {
+              _buildNavItem(context, Icons.info_outline, 'Reports',
+                  currentPage == 'Reports', () {
+                if (currentPage != 'Reports') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AboutPage(
-                          appSettings: appSettings), // ← Add appSettings
+                      builder: (context) => ReportsPage(
+                        appSettings: appSettings,
+                        transactions: transactions, // ← ADD THIS
+                      ), // ← Add appSettings
                     ),
                   );
                 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'stats_page.dart';
-import 'about_page.dart';
+import 'reports_page.dart';
 import 'profile_page.dart';
 import 'add_transaction_page.dart';
 import 'notifications_page.dart';
@@ -10,8 +10,10 @@ import '../utils/backup_service.dart';
 
 class HomePage extends StatefulWidget {
   final AppSettings appSettings;
+  final List<Map<String, dynamic>> transactions;
 
-  const HomePage({super.key, required this.appSettings});
+  const HomePage(
+      {super.key, required this.appSettings, required this.transactions});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -41,7 +43,8 @@ class _HomePageState extends State<HomePage> {
   void _loadTransactions() async {
     final transactions = await BackupService.loadTransactions();
     setState(() {
-      _recentTransactions = transactions;
+      _recentTransactions =
+          transactions.isNotEmpty ? transactions : widget.transactions;
     });
   }
 
@@ -727,13 +730,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               }),
-              _buildNavItem(Icons.info_outline, 'About', false, () {
+              _buildNavItem(Icons.info_outline, 'Reports', false, () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          AboutPage(appSettings: widget.appSettings)),
-                );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReportsPage(
+                        appSettings: widget.appSettings,
+                        transactions: _recentTransactions,
+                      ),
+                    ));
               }),
             ],
           ),

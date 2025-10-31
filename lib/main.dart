@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: widget.appSettings.darkMode ? ThemeMode.dark : ThemeMode.light,
-      home: HomePage(appSettings: widget.appSettings),
+      home: HomePage(appSettings: widget.appSettings, transactions: []),
       debugShowCheckedModeBanner: false,
     );
   }
