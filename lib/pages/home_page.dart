@@ -43,8 +43,7 @@ class _HomePageState extends State<HomePage> {
   void _loadTransactions() async {
     final transactions = await BackupService.loadTransactions();
     setState(() {
-      _recentTransactions =
-          transactions.isNotEmpty ? transactions : widget.transactions;
+      _recentTransactions = transactions;
     });
   }
 
@@ -738,7 +737,7 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(
                       builder: (context) => ReportsPage(
                         appSettings: widget.appSettings,
-                        transactions: _recentTransactions,
+                        transactions: widget.transactions,
                       ),
                     ));
               }),
