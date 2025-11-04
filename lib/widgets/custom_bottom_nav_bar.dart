@@ -69,11 +69,11 @@ class CustomBottomNavBar extends StatelessWidget {
               _buildNavItem(context, Icons.person_outline, 'Profile',
                   currentPage == 'profile', () {
                 if (currentPage != 'profile') {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ProfilePage(appSettings: appSettings),
+                      builder: (context) => ProfilePage(
+                          appSettings: appSettings, transactions: transactions),
                     ),
                   );
                 }
@@ -81,7 +81,7 @@ class CustomBottomNavBar extends StatelessWidget {
               _buildNavItem(context, Icons.info_outline, 'Reports',
                   currentPage == 'Reports', () {
                 if (currentPage != 'Reports') {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ReportsPage(
