@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_settings.dart';
 import '../utils/backup_service.dart';
-import '../widgets/custom_bottom_nav_bar.dart'; // ← ADD THIS IMPORT
+import '../widgets/custom_bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   final AppSettings appSettings;
+  final List<Map<String, dynamic>> transactions;
 
-  const ProfilePage({super.key, required this.appSettings});
+  const ProfilePage({
+    super.key,
+    required this.appSettings,
+    required this.transactions,
+  });
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -52,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     widget.appSettings.addListener(_onSettingsChanged);
     _loadBackupStatus();
-    _loadProfileData(); // Load saved profile data
+    _loadProfileData();
   }
 
   @override
@@ -128,10 +133,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        // ← ADD THIS
         appSettings: widget.appSettings,
-        transactions: [], // Profile page doesn't need transactions, so pass empty list
-        currentPage: 'profile', // This will highlight the Profile icon
+        transactions: widget.transactions,
+        currentPage: 'profile',
       ),
     );
   }

@@ -725,8 +725,10 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ProfilePage(appSettings: widget.appSettings),
+                    builder: (context) => ProfilePage(
+                      appSettings: widget.appSettings,
+                      transactions: widget.transactions,
+                    ),
                   ),
                 );
               }),

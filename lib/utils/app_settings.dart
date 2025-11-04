@@ -11,6 +11,13 @@ class AppSettings extends ChangeNotifier {
   String _transactionFilterType = 'All'; // All, Income, Expense
   String _transactionSortBy = 'Date'; // Date, Amount, Category
 
+  // ADD REPORT STATE PROPERTIES
+  String _reportType = 'Summary';
+  String _reportDateRange = 'Last 30 Days';
+  DateTime _reportStartDate = DateTime.now().subtract(const Duration(days: 30));
+  DateTime _reportEndDate = DateTime.now();
+  bool _reportShowCustomDatePicker = false;
+
   AppSettings() {
     _loadBackupSetting();
   }
@@ -25,9 +32,16 @@ class AppSettings extends ChangeNotifier {
   // Get currency symbol only
   String get currencySymbol => _currency.split(' - ')[0];
 
-  // ADD GETTERS FOR FILTERS
+  // GETTERS FOR TRANSACTION FILTERS
   String get transactionFilterType => _transactionFilterType;
   String get transactionSortBy => _transactionSortBy;
+
+  // GETTERS FOR REPORT SETTINGS
+  String get reportType => _reportType;
+  String get reportDateRange => _reportDateRange;
+  DateTime get reportStartDate => _reportStartDate;
+  DateTime get reportEndDate => _reportEndDate;
+  bool get reportShowCustomDatePicker => _reportShowCustomDatePicker;
 
   // Setters
   void setCurrency(String newCurrency) {
@@ -48,10 +62,8 @@ class AppSettings extends ChangeNotifier {
   void setNotificationsEnabled(bool enabled) {
     _notificationsEnabled = enabled;
     if (!enabled) {
-      // Cancel all scheduled notifications when disabled
       _cancelAllNotifications();
     } else {
-      // Schedule notifications when enabled
       _scheduleDefaultNotifications();
     }
     notifyListeners();
@@ -63,7 +75,7 @@ class AppSettings extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ADD SETTERS FOR FILTERS
+  // SETTERS FOR TRANSACTION FILTERS
   void setTransactionFilterType(String filterType) {
     _transactionFilterType = filterType;
     notifyListeners();
@@ -71,6 +83,71 @@ class AppSettings extends ChangeNotifier {
 
   void setTransactionSortBy(String sortBy) {
     _transactionSortBy = sortBy;
+    notifyListeners();
+  }
+
+  // SETTERS FOR REPORT SETTINGS
+  void setReportType(String type) {
+    _reportType = type;
+    notifyListeners();
+  }
+
+  void setReportDateRange(String dateRange) {
+    _reportDateRange = dateRange;
+    notifyListeners();
+  }
+
+  void setReportDates(DateTime startDate, DateTime endDate) {
+    _reportStartDate = startDate;
+    _reportEndDate = endDate;
+    notifyListeners();
+  }
+
+  void setReportShowCustomDatePicker(bool show) {
+    _reportShowCustomDatePicker = show;
+    notifyListeners();
+  }
+
+  void updateReportDateRange(String range) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    switch (range) {
+      case 'Today':
+        _reportStartDate = today;
+        _reportEndDate = today;
+        break;
+      case 'Yesterday':
+        _reportStartDate = today.subtract(const Duration(days: 1));
+        _reportEndDate = today.subtract(const Duration(days: 1));
+        break;
+      case 'Last 7 Days':
+        _reportStartDate = today.subtract(const Duration(days: 7));
+        _reportEndDate = today;
+        break;
+      case 'Last 30 Days':
+        _reportStartDate = today.subtract(const Duration(days: 30));
+        _reportEndDate = today;
+        break;
+      case 'This Month':
+        _reportStartDate = DateTime(now.year, now.month, 1);
+        _reportEndDate = today;
+        break;
+      case 'Last Month':
+        final firstDayLastMonth = DateTime(now.year, now.month - 1, 1);
+        final lastDayLastMonth = DateTime(now.year, now.month, 0);
+        _reportStartDate = firstDayLastMonth;
+        _reportEndDate = lastDayLastMonth;
+        break;
+      case 'This Year':
+        _reportStartDate = DateTime(now.year, 1, 1);
+        _reportEndDate = today;
+        break;
+      case 'Custom Range':
+        // Keep existing custom dates
+        break;
+    }
+    _reportDateRange = range;
     notifyListeners();
   }
 
@@ -83,19 +160,16 @@ class AppSettings extends ChangeNotifier {
 
   // Placeholder methods for notification functionality
   void _cancelAllNotifications() {
-    // This would integrate with flutter_local_notifications
     print('All notifications cancelled');
   }
 
   void _scheduleDefaultNotifications() {
-    // This would integrate with flutter_local_notifications
     print('Default notifications scheduled');
   }
 
   // Method to trigger notifications from other parts of the app
   void triggerBudgetAlert(String message) {
     if (_notificationsEnabled) {
-      // This would show actual local notifications
       print('Budget Alert: $message');
     }
   }

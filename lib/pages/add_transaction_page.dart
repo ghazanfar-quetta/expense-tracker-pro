@@ -92,6 +92,27 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     }
 
     _selectedCategory = transaction['category'] as String;
+    // Handle date - if it's "Today", convert to actual date
+    final dateString = transaction['date'] as String;
+    if (dateString == 'Today') {
+      _selectedDate = DateTime.now();
+    } else if (dateString == 'Yesterday') {
+      _selectedDate = DateTime.now().subtract(const Duration(days: 1));
+    } else {
+      // Parse existing date in DD/MM/YYYY format
+      try {
+        final parts = dateString.split('/');
+        if (parts.length == 3) {
+          final day = int.parse(parts[0]);
+          final month = int.parse(parts[1]);
+          final year = int.parse(parts[2]);
+          _selectedDate = DateTime(year, month, day);
+        }
+      } catch (e) {
+        print('Error parsing date: $dateString');
+        _selectedDate = DateTime.now(); // Fallback to today
+      }
+    }
   }
 
   // Get current categories based on transaction type
@@ -545,7 +566,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             ? -double.parse(_amountController.text)
             : double.parse(_amountController.text),
         'category': _selectedCategory,
-        'date': _formatDate(_selectedDate),
+        'date':
+            '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}', // ← FIXED: Use actual date format
         'icon': _getCategoryIcon(_selectedCategory),
         'color': _getCategoryColor(_selectedCategory),
       };
